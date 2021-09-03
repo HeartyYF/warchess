@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/image">
+        <file alias="selectbox">selectbox.png</file>
+    </qresource>
+    <qresource prefix="/sound">
+        <file alias="atk">Abandoned_Atk.wav</file>
+        <file alias="def">Defense_Evasion.wav</file>
+    </qresource>
+</RCC>
