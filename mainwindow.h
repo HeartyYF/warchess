@@ -25,5 +25,7 @@ private:
 public slots:
     void onclearSidebar();
     void ondisplaySidebar(QGraphicsTileItem* item);
+    void onEnemyTurn();
+    void onAllyTurn();
 };
 #endif // MAINWINDOW_H

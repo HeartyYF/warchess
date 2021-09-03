@@ -1,4 +1,5 @@
 #include "gamecontroller.h"
+#include "qcoreapplication.h"
 
 GameController::GameController(QGraphicsScene* _scene, QGraphicsView* _view): scene(_scene), view(_view)
 {
@@ -27,6 +28,14 @@ GameController::GameController(QGraphicsScene* _scene, QGraphicsView* _view): sc
     map = nullptr;
     current = 0;
 }
+
+struct
+{
+    bool operator() (QGraphicsTileItem* f, QGraphicsTileItem* s)
+    {
+        return f->cost + f->eval < s->cost + s->eval;
+    }
+} cmp;
 
 bool GameController::drawNextBattle()
 {
@@ -79,10 +88,177 @@ void GameController::addLosing(Character*& chara)
 
 void GameController::nextTurn()
 {
+    view->viewport()->update();
+    emit enemyTurn();
     turnlist = allylist;
     for(auto& i: allylist)
     {
         i->isMoved = false;
+    }
+    for(auto& i: enemylist)
+    {
+        openlist.clear();
+        closelist.clear();
+        QGraphicsTileItem* begin = QGraphicsTileItem::tilefind[i];
+        QGraphicsTileItem* end;
+        Character* dest;
+        int dist = 999999;
+        for(auto& j: allylist)
+        {
+            QGraphicsTileItem* tempend = QGraphicsTileItem::tilefind[j];
+            if(QPoint(begin->x - tempend->x, begin->y - tempend->y).manhattanLength() < dist)
+            {
+                dist = QPoint(begin->x - tempend->x, begin->y - tempend->y).manhattanLength();
+                dest = j;
+                end = tempend;
+            }
+        }
+        if(dist <= i->getrange())
+        {
+            dest->damage(i->getatk());
+            QTime dieTime= QTime::currentTime().addSecs(1);
+            while(QTime::currentTime() < dieTime)
+            {
+                QCoreApplication::processEvents();
+            }
+            continue;
+        }
+        begin->cost = 0;
+        begin->eval = dist;
+        end->father = nullptr;
+        openlist.emplace_back(begin);
+        while(!openlist.empty())
+        {
+            auto cur = *openlist.begin();
+            if(cur->x != 0)
+            {
+                auto next = QGraphicsTileItem::items[cur->x - 1][cur->y];
+                if(next == end)
+                {
+                    end->father = cur;
+                    break;
+                }
+                else if(next->canPass() && find(closelist.begin(), closelist.end(), next) == closelist.end())
+                {
+                    if(find(openlist.begin(), openlist.end(), next) != openlist.end())
+                    {
+                        if(next->cost > cur->cost + next->getTile()->getCost())
+                        {
+                            next->cost = cur->cost + next->getTile()->getCost();
+                            next->father = cur;
+                        }
+                    }
+                    else
+                    {
+                        next->cost = cur->cost + next->getTile()->getCost();
+                        next->eval = QPoint(next->x - end->x, next->y - end->y).manhattanLength();
+                        next->father = cur;
+                        openlist.emplace_back(next);
+                    }
+                }
+            }
+            if(cur->y != 0)
+            {
+                auto next = QGraphicsTileItem::items[cur->x][cur->y - 1];
+                if(next == end)
+                {
+                    end->father = cur;
+                    break;
+                }
+                else if(next->canPass() && find(closelist.begin(), closelist.end(), next) == closelist.end())
+                {
+                    if(find(openlist.begin(), openlist.end(), next) != openlist.end())
+                    {
+                        if(next->cost > cur->cost + next->getTile()->getCost())
+                        {
+                            next->cost = cur->cost + next->getTile()->getCost();
+                            next->father = cur;
+                        }
+                    }
+                    else
+                    {
+                        next->cost = cur->cost + next->getTile()->getCost();
+                        next->eval = QPoint(next->x - end->x, next->y - end->y).manhattanLength();
+                        next->father = cur;
+                        openlist.emplace_back(next);
+                    }
+                }
+            }
+            if(cur->x != QGraphicsTileItem::items.size() - 1)
+            {
+                auto next = QGraphicsTileItem::items[cur->x + 1][cur->y];
+                if(next == end)
+                {
+                    end->father = cur;
+                    break;
+                }
+                else if(next->canPass() && find(closelist.begin(), closelist.end(), next) == closelist.end())
+                {
+                    if(find(openlist.begin(), openlist.end(), next) != openlist.end())
+                    {
+                        if(next->cost > cur->cost + next->getTile()->getCost())
+                        {
+                            next->cost = cur->cost + next->getTile()->getCost();
+                            next->father = cur;
+                        }
+                    }
+                    else
+                    {
+                        next->cost = cur->cost + next->getTile()->getCost();
+                        next->eval = QPoint(next->x - end->x, next->y - end->y).manhattanLength();
+                        next->father = cur;
+                        openlist.emplace_back(next);
+                    }
+                }
+            }
+            if(cur->y != QGraphicsTileItem::items[0].size() - 1)
+            {
+                auto next = QGraphicsTileItem::items[cur->x][cur->y + 1];
+                if(next == end)
+                {
+                    end->father = cur;
+                    break;
+                }
+                else if(next->canPass() && find(closelist.begin(), closelist.end(), next) == closelist.end())
+                {
+                    if(find(openlist.begin(), openlist.end(), next) != openlist.end())
+                    {
+                        if(next->cost > cur->cost + next->getTile()->getCost())
+                        {
+                            next->cost = cur->cost + next->getTile()->getCost();
+                            next->father = cur;
+                        }
+                    }
+                    else
+                    {
+                        next->cost = cur->cost + next->getTile()->getCost();
+                        next->eval = QPoint(next->x - end->x, next->y - end->y).manhattanLength();
+                        next->father = cur;
+                        openlist.emplace_back(next);
+                    }
+                }
+            }
+            openlist.remove(cur);
+            closelist.emplace_back(cur);
+            openlist.sort(cmp);
+        }
+        while(end->cost > i->getmov() || end->getChar() != nullptr)
+        {
+            end = end->father;
+        }
+        begin->setChara(nullptr);
+        end->setChara(i);
+        QGraphicsTileItem::tilefind.insert(i, end);
+        if(QPoint(QGraphicsTileItem::tilefind[dest]->x - end->x, QGraphicsTileItem::tilefind[dest]->y - end->y).manhattanLength() <= i->getrange())
+        {
+            dest->damage(i->getatk());
+        }
+        QTime dieTime= QTime::currentTime().addSecs(1);
+        while(QTime::currentTime() < dieTime)
+        {
+            QCoreApplication::processEvents();
+        }
+        view->viewport()->update();
     }
     for(auto& i: allylist)
     {
@@ -99,6 +275,7 @@ void GameController::nextTurn()
         }
     }
     ++turn;
+    emit allyTurn();
 }
 
 void GameController::endTurn(Character* chara)

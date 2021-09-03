@@ -17,7 +17,6 @@ class QGraphicsTileItem: public QObject, public QGraphicsItemGroup
 {
     Q_OBJECT
 
-    int x, y;
     QGraphicsPixmapItem bg;
     QGraphicsPixmapItem avatar;
     QGraphicsPixmapItem fg;
@@ -29,7 +28,6 @@ class QGraphicsTileItem: public QObject, public QGraphicsItemGroup
     bool canAttack;
     int mov;
     int rge;
-    //list<QGraphicsTileItem*> path;
     static list<QGraphicsTileItem*> layered;
     static QGraphicsTileItem* source;
     static QPointF clickpos;
@@ -38,6 +36,7 @@ class QGraphicsTileItem: public QObject, public QGraphicsItemGroup
     static void clearLayer(bool keepSource = true);
     static void generateLayer(int _x, int _y, int range, bool isMove = true);
 public:
+    int x, y;
     static QGraphicsView* view;
     static vector<vector<QGraphicsTileItem*>> items;
     static QHash<Character*, QGraphicsTileItem*> tilefind;
@@ -53,6 +52,9 @@ public:
     const static int infdist = -999999;
     const Tile* const getTile() const;
     const Character* const getChar() const;
+    int cost;
+    int eval;
+    QGraphicsTileItem* father;
 signals:
     void endChar(Character*);
     void onDeath(Character*);

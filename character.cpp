@@ -119,7 +119,6 @@ bool Character::hurt(int damage)
     curhp -= damage;
     if(curhp <= 0)
     {
-        qDebug()<<name;
         return true;
     }
     return false;

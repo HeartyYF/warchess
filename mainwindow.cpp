@@ -17,11 +17,14 @@ MainWindow::MainWindow(QWidget *parent)
     QPixmap bg(256, 720);
     bg.fill(Qt::darkCyan);
     ui->label->setPixmap(bg);
+    ui->turn->hide();
     ui->vlayout->setMargin(10);
     ui->vlayout->setSpacing(10);
     controller = new GameController(scene, view);
     connect(controller, SIGNAL(clearSidebar()), this, SLOT(onclearSidebar()));
     connect(controller, SIGNAL(displaySidebar(QGraphicsTileItem*)), this, SLOT(ondisplaySidebar(QGraphicsTileItem*)));
+    connect(controller, SIGNAL(enemyTurn()), this, SLOT(onEnemyTurn()));
+    connect(controller, SIGNAL(allyTurn()), this, SLOT(onAllyTurn()));
     controller->drawNextBattle();
 }
 
@@ -111,3 +114,28 @@ void MainWindow::ondisplaySidebar(QGraphicsTileItem* item)
     view->lower();
 }
 
+void MainWindow::onEnemyTurn()
+{
+    ui->turn->setText("敌方行动");
+    ui->turn->raise();
+    ui->turn->show();
+    QTime dieTime= QTime::currentTime().addSecs(1);
+    while(QTime::currentTime() < dieTime)
+    {
+        QCoreApplication::processEvents();
+    }
+    ui->turn->hide();
+}
+
+void MainWindow::onAllyTurn()
+{
+    ui->turn->setText("友方行动");
+    ui->turn->raise();
+    ui->turn->show();
+    QTime dieTime= QTime::currentTime().addSecs(1);
+    while(QTime::currentTime() < dieTime)
+    {
+        QCoreApplication::processEvents();
+    }
+    ui->turn->hide();
+}

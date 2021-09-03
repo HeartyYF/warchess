@@ -1,7 +1,6 @@
 #include "qgraphicstileitem.h"
 
-QGraphicsTileItem::QGraphicsTileItem(int i, int j, Tile* _tile):
-    x(i), y(j), tile(_tile)
+QGraphicsTileItem::QGraphicsTileItem(int i, int j, Tile* _tile): tile(_tile), x(i), y(j)
 {
     bg.setPixmap(*tile->getbImage());
     fg.setPixmap(*tile->getfImage());
@@ -104,28 +103,28 @@ void QGraphicsTileItem::generateLayer(int _x, int _y, int range, bool isMove)//�
     }
     if(_x != 0)
     {
-        if(items[_x - 1][_y]->canPass())
+        if(items[_x - 1][_y]->canPass() || items[_x - 1][_y]->chara != nullptr)
         {
             generateLayer(_x - 1, _y, range, isMove);
         }
     }
     if(_x != items.size() - 1)
     {
-        if(items[_x + 1][_y]->canPass())
+        if(items[_x + 1][_y]->canPass() || items[_x + 1][_y]->chara != nullptr)
         {
             generateLayer(_x + 1, _y, range, isMove);
         }
     }
     if(_y != 0)
     {
-        if(items[_x][_y - 1]->canPass())
+        if(items[_x][_y - 1]->canPass() || items[_x][_y - 1]->chara != nullptr)
         {
             generateLayer(_x, _y - 1, range, isMove);
         }
     }
     if(_y != items[0].size() - 1)
     {
-        if(items[_x][_y + 1]->canPass())
+        if(items[_x][_y + 1]->canPass() || items[_x][_y + 1]->chara != nullptr)
         {
             generateLayer(_x, _y + 1, range, isMove);
         }
@@ -156,7 +155,6 @@ void QGraphicsTileItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
         }
         emit displaySidebar(this);
         view->centerOn(this);
-        //需要一个展示状态的ui
         if(Selected)
         {
             QPixmap nullpix;
@@ -196,9 +194,9 @@ void QGraphicsTileItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
             QPixmap nullpix;
             source->layer.setPixmap(nullpix);
             source->chara->isMoved = true;
+            clearLayer();
             emit endChar(source->chara);
             emit displaySidebar(this);
-            clearLayer();
         }
         else if(chara != nullptr && chara->isAlly() && !chara->isMoved && !isMoved)
         {
@@ -253,7 +251,7 @@ void QGraphicsTileItem::setChara(Character* _chara)
 
 bool QGraphicsTileItem::canPass()
 {
-    return tile->canPass();
+    return tile->canPass() && chara == nullptr;
 }
 
 const Tile* const QGraphicsTileItem::getTile() const
