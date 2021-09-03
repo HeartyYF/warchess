@@ -7,6 +7,7 @@ GameController::GameController(QGraphicsScene* _scene, QGraphicsView* _view): sc
     QGraphicsTileItem::atkSound.setSource(QUrl::fromLocalFile(":/sound/atk"));
     QGraphicsTileItem::defSound.setSource(QUrl::fromLocalFile(":/sound/def"));
     player = new QMediaPlayer;
+    connect(player, SIGNAL(stateChanged(QMediaPlayer::State)), player, SLOT(play()));
     const QString filename = "game/game.json";
     QFile file(filename);
     path = QFileInfo(file).dir();
@@ -256,7 +257,6 @@ void GameController::nextTurn()
         }
         if(end->father == nullptr)
         {
-            qDebug()<<"有毛病";
             continue;
         }
         while(end->cost - end->getTile()->getCost() > i->getmov() || end->getChar() != nullptr)
@@ -277,21 +277,23 @@ void GameController::nextTurn()
         }
         view->viewport()->update();
     }
-    for(auto& i: allylist)
-    {
-        if(i->hurt(QGraphicsTileItem::tilefind[i]->getTile()->getDamage()))
-        {
-            onDeathCheck(i);
-        }
-    }
-    for(auto& i: enemylist)
-    {
-        if(i->hurt(QGraphicsTileItem::tilefind[i]->getTile()->getDamage()))
-        {
-            onDeathCheck(i);
-        }
-    }
     ++turn;
+    auto templist = allylist;
+    for(auto& i: templist)
+    {
+        if(i->hurt(QGraphicsTileItem::tilefind[i]->getTile()->getDamage()))
+        {
+            onDeathCheck(i);
+        }
+    }
+    templist = enemylist;
+    for(auto& i: templist)
+    {
+        if(i->hurt(QGraphicsTileItem::tilefind[i]->getTile()->getDamage()))
+        {
+            onDeathCheck(i);
+        }
+    }
     emit allyTurn();
 }
 
@@ -306,6 +308,8 @@ void GameController::endTurn(Character* chara)
 
 void GameController::onDeathCheck(Character* chara)
 {
+    QGraphicsTileItem::tilefind[chara]->setChara(nullptr);
+    view->viewport()->update();
     if(chara->isAlly())
     {
         losing.remove(chara);

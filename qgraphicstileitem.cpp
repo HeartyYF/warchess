@@ -187,7 +187,6 @@ void QGraphicsTileItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
             if(chara->damage(source->chara->getatk()))
             {
                 emit onDeath(chara);
-                setChara(nullptr);
             }
             source->Selected = false;
             QPixmap nullpix;

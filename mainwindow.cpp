@@ -116,6 +116,7 @@ void MainWindow::ondisplaySidebar(QGraphicsTileItem* item)
 
 void MainWindow::onEnemyTurn()
 {
+    onclearSidebar();
     ui->turn->setText("敌方行动");
     ui->turn->raise();
     ui->turn->show();
