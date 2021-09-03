@@ -39,12 +39,11 @@ void QGraphicsTileItem::generateLayer(int _x, int _y, int range, bool isMove)//�
 {
     range -= isMove ? items[_x][_y]->tile->getCost() : 1;//首先扣除移动到当前格的cost，即使mov不足也能至少移动一格
     //如果是在搜寻敌人 则只扣掉一个
-    //qDebug()<<range<<" "<<_x<<" "<<_y;
     if(isMove && items[_x][_y]->mov >= range)//如果在行动 需要判断走到这格是否有更优方法
     {
         return;
     }
-    else if(items[_x][_y]->mov != infdist || items[_x][_y]->rge >= range)//如果在搜敌 则首先判断是否是可以走到的格 然后判断是否有更优搜索
+    if(!isMove && (items[_x][_y]->mov != infdist || items[_x][_y]->rge >= range))//如果在搜敌 则首先判断是否是可以走到的格 然后判断是否有更优搜索
     {
         return;
     }

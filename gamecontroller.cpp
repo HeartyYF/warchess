@@ -135,8 +135,11 @@ void GameController::nextTurn()
                 auto next = QGraphicsTileItem::items[cur->x - 1][cur->y];
                 if(next == end)
                 {
-                    end->father = cur;
-                    break;
+                    if(end->father == nullptr || end->cost > cur->cost)
+                    {
+                        end->father = cur;
+                        end->cost = cur->cost;
+                    }
                 }
                 else if(next->canPass() && find(closelist.begin(), closelist.end(), next) == closelist.end())
                 {
@@ -162,8 +165,11 @@ void GameController::nextTurn()
                 auto next = QGraphicsTileItem::items[cur->x][cur->y - 1];
                 if(next == end)
                 {
-                    end->father = cur;
-                    break;
+                    if(end->father == nullptr || end->cost > cur->cost)
+                    {
+                        end->father = cur;
+                        end->cost = cur->cost;
+                    }
                 }
                 else if(next->canPass() && find(closelist.begin(), closelist.end(), next) == closelist.end())
                 {
@@ -189,8 +195,11 @@ void GameController::nextTurn()
                 auto next = QGraphicsTileItem::items[cur->x + 1][cur->y];
                 if(next == end)
                 {
-                    end->father = cur;
-                    break;
+                    if(end->father == nullptr || end->cost > cur->cost)
+                    {
+                        end->father = cur;
+                        end->cost = cur->cost;
+                    }
                 }
                 else if(next->canPass() && find(closelist.begin(), closelist.end(), next) == closelist.end())
                 {
@@ -216,8 +225,11 @@ void GameController::nextTurn()
                 auto next = QGraphicsTileItem::items[cur->x][cur->y + 1];
                 if(next == end)
                 {
-                    end->father = cur;
-                    break;
+                    if(end->father == nullptr || end->cost > cur->cost)
+                    {
+                        end->father = cur;
+                        end->cost = cur->cost;
+                    }
                 }
                 else if(next->canPass() && find(closelist.begin(), closelist.end(), next) == closelist.end())
                 {
@@ -242,7 +254,12 @@ void GameController::nextTurn()
             closelist.emplace_back(cur);
             openlist.sort(cmp);
         }
-        while(end->cost > i->getmov() || end->getChar() != nullptr)
+        if(end->father == nullptr)
+        {
+            qDebug()<<"有毛病";
+            continue;
+        }
+        while(end->cost - end->getTile()->getCost() > i->getmov() || end->getChar() != nullptr)
         {
             end = end->father;
         }
