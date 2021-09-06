@@ -27,7 +27,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(controller, SIGNAL(displaySidebar(QGraphicsTileItem*)), this, SLOT(ondisplaySidebar(QGraphicsTileItem*)));
     connect(controller, SIGNAL(enemyTurn()), this, SLOT(onEnemyTurn()));
     connect(controller, SIGNAL(allyTurn()), this, SLOT(onAllyTurn()));
-    controller->drawNextBattle();
+    connect(controller, SIGNAL(gameWin()), this, SLOT(stopGame()));
+    connect(controller, SIGNAL(gameLost()), this, SLOT(stopGame()));
+    controller->drawBeforeDialog();
 }
 
 MainWindow::~MainWindow()
@@ -137,4 +139,9 @@ void MainWindow::onAllyTurn()
         QCoreApplication::processEvents();
     }
     ui->turn->hide();
+}
+
+void MainWindow::stopGame()
+{
+    close();
 }

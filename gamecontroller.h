@@ -9,6 +9,7 @@
 #include <list>
 #include <algorithm>
 #include "map.h"
+#include "dialog.h"
 using std::list;
 using std::find;
 
@@ -19,6 +20,7 @@ class GameController: public QObject
     QGraphicsScene* scene;
     QGraphicsView* view;
     Map* map;
+    Dialog* dialog;
     list<Character*> charlist;//用于存放所有友方的metadata
     list<Character*> allylist;//战斗中实例化的友方
     list<Character*> enemylist;//战斗中实例化的敌方
@@ -37,25 +39,29 @@ class GameController: public QObject
 
 public:
     GameController(QGraphicsScene* _scene, QGraphicsView* _view, QMediaPlayer* _player);
-    bool drawNextBattle();
     Character* findchar(const QString& name) const;
     void addAlly(Character*&);
     void addEnemy(Character*&);
     void addWinning(Character*&);
     void addLosing(Character*&);
     int getTurn() const;
+    void drawAfterDialog();
 
 public slots:
     void endTurn(Character*);
     void onDeathCheck(Character*);
     void onclearSidebar();
     void ondisplaySidebar(QGraphicsTileItem*);
+    void drawBeforeDialog();
+    void drawNextBattle();
 
 signals:
     void clearSidebar();
     void displaySidebar(QGraphicsTileItem*);
     void enemyTurn();
     void allyTurn();
+    void gameWin();
+    void gameLost();
 
 };
 

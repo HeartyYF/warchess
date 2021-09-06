@@ -28,5 +28,6 @@ public slots:
     void ondisplaySidebar(QGraphicsTileItem* item);
     void onEnemyTurn();
     void onAllyTurn();
+    void stopGame();
 };
 #endif // MAINWINDOW_H

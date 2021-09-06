@@ -25,6 +25,7 @@ GameController::GameController(QGraphicsScene* _scene, QGraphicsView* _view, QMe
     }
     battle = json["battle"].toArray();
     map = nullptr;
+    dialog = nullptr;
     current = 0;
 }
 
@@ -36,15 +37,66 @@ struct
     }
 } cmp;
 
-bool GameController::drawNextBattle()
+void GameController::drawBeforeDialog()
 {
+    view->centerOn(0, 0);
     scene->clear();
-
-    delete map;
     if(current == battle.count())
     {
-        return false;
+        emit gameWin();
+        return;
     }
+    QJsonObject battlejson = battle[current].toObject();
+    if(battlejson.contains("before"))
+    {
+        QString dialfile = battlejson["before"].toString();
+        QFile file(path.filePath(dialfile));
+        file.open(QIODevice::ReadOnly);
+        QString value = file.readAll();
+        file.close();
+        QJsonDocument document = QJsonDocument::fromJson(value.toUtf8());
+        QJsonArray dialjson = document.array();
+        dialog = new Dialog(dialjson, QFileInfo(file).path(), scene, player);
+        connect(dialog, SIGNAL(dialogEnd()), this, SLOT(drawNextBattle()));
+    }
+    else
+    {
+        drawNextBattle();
+    }
+}
+
+void GameController::drawAfterDialog()
+{
+    view->centerOn(0, 0);
+    scene->clear();
+    QJsonObject battlejson = battle[current].toObject();
+    ++current;
+    if(battlejson.contains("after"))
+    {
+        QString dialfile = battlejson["after"].toString();
+        QFile file(path.filePath(dialfile));
+        file.open(QIODevice::ReadOnly);
+        QString value = file.readAll();
+        file.close();
+        QJsonDocument document = QJsonDocument::fromJson(value.toUtf8());
+        QJsonArray dialjson = document.array();
+        dialog = new Dialog(dialjson, QFileInfo(file).path(), scene, player);
+        connect(dialog, SIGNAL(dialogEnd()), this, SLOT(drawBeforeDialog()));
+    }
+    else
+    {
+        drawBeforeDialog();
+    }
+}
+
+void GameController::drawNextBattle()
+{
+    allylist.clear();
+    enemylist.clear();
+    winning.clear();
+    losing.clear();
+    scene->clear();
+    delete map;
     turn = 1;
     QJsonObject battlejson = battle[current].toObject();
     QString mapfile = battlejson["map"].toString();
@@ -57,7 +109,6 @@ bool GameController::drawNextBattle()
     map = new Map(mapjson, QFileInfo(file).path(), this, player);
     map->summonItems(scene);
     turnlist = allylist;
-    return true;
 }
 
 Character* GameController::findchar(const QString& name) const
@@ -282,6 +333,10 @@ void GameController::nextTurn()
         if(i->hurt(QGraphicsTileItem::tilefind[i]->getTile()->getDamage()))
         {
             onDeathCheck(i);
+            if(losing.size() == 0)
+            {
+                return;
+            }
         }
     }
     templist = enemylist;
@@ -290,6 +345,10 @@ void GameController::nextTurn()
         if(i->hurt(QGraphicsTileItem::tilefind[i]->getTile()->getDamage()))
         {
             onDeathCheck(i);
+            if(winning.size() == 0)
+            {
+                return;
+            }
         }
     }
     emit allyTurn();
@@ -314,7 +373,7 @@ void GameController::onDeathCheck(Character* chara)
         allylist.remove(chara);
         if(losing.size() == 0)
         {
-            qDebug()<<"lost";
+            emit gameLost();
         }
     }
     else
@@ -323,7 +382,7 @@ void GameController::onDeathCheck(Character* chara)
         enemylist.remove(chara);
         if(winning.size() == 0)
         {
-            qDebug()<<"win";
+            drawAfterDialog();
         }
     }
 }
