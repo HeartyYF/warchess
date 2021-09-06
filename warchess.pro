@@ -11,6 +11,7 @@ CONFIG += c++11
 
 SOURCES += \
     character.cpp \
+    dialog.cpp \
     gamecontroller.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -20,6 +21,7 @@ SOURCES += \
 
 HEADERS += \
     character.h \
+    dialog.h \
     gamecontroller.h \
     mainwindow.h \
     map.h \

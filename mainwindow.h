@@ -12,15 +12,16 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
-    GameController* controller;
-    QGraphicsScene* scene;
-    QGraphicsView* view;
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
 private:
     Ui::MainWindow *ui;
+    GameController* controller;
+    QGraphicsScene* scene;
+    QGraphicsView* view;
+    QMediaPlayer* player;
 
 public slots:
     void onclearSidebar();

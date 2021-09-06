@@ -1,13 +1,11 @@
 #include "gamecontroller.h"
 #include "qcoreapplication.h"
 
-GameController::GameController(QGraphicsScene* _scene, QGraphicsView* _view): scene(_scene), view(_view)
+GameController::GameController(QGraphicsScene* _scene, QGraphicsView* _view, QMediaPlayer* _player): scene(_scene), view(_view), player(_player)
 {
     QGraphicsTileItem::view = view;
     QGraphicsTileItem::atkSound.setSource(QUrl::fromLocalFile(":/sound/atk"));
     QGraphicsTileItem::defSound.setSource(QUrl::fromLocalFile(":/sound/def"));
-    player = new QMediaPlayer;
-    connect(player, SIGNAL(stateChanged(QMediaPlayer::State)), player, SLOT(play()));
     const QString filename = "game/game.json";
     QFile file(filename);
     path = QFileInfo(file).dir();

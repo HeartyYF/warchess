@@ -36,7 +36,7 @@ class GameController: public QObject
     void nextTurn();
 
 public:
-    GameController(QGraphicsScene* _scene, QGraphicsView* _view);
+    GameController(QGraphicsScene* _scene, QGraphicsView* _view, QMediaPlayer* _player);
     bool drawNextBattle();
     Character* findchar(const QString& name) const;
     void addAlly(Character*&);

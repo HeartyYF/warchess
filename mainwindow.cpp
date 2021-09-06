@@ -20,7 +20,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->turn->hide();
     ui->vlayout->setMargin(10);
     ui->vlayout->setSpacing(10);
-    controller = new GameController(scene, view);
+    player = new QMediaPlayer;
+    controller = new GameController(scene, view, player);
+    connect(player, SIGNAL(stateChanged(QMediaPlayer::State)), player, SLOT(play()));
     connect(controller, SIGNAL(clearSidebar()), this, SLOT(onclearSidebar()));
     connect(controller, SIGNAL(displaySidebar(QGraphicsTileItem*)), this, SLOT(ondisplaySidebar(QGraphicsTileItem*)));
     connect(controller, SIGNAL(enemyTurn()), this, SLOT(onEnemyTurn()));
@@ -55,8 +57,6 @@ void MainWindow::onclearSidebar()
         delete i;
     }
     view->raise();
-    //view->resize(QSize(1280, 720));
-    //view->move(QPoint(0, 0));
 }
 
 void MainWindow::ondisplaySidebar(QGraphicsTileItem* item)
@@ -64,8 +64,6 @@ void MainWindow::ondisplaySidebar(QGraphicsTileItem* item)
     const Tile* tile = item->getTile();
     const Character* chara = item->getChar();
     onclearSidebar();
-    //view->resize(QSize(1024, 720));
-    //view->move(QPoint(256, 0));
     QLabel* turntext = new QLabel(this);
     turntext->setText(QString("回合：%1").arg(controller->getTurn()));
     ui->vlayout->addWidget(turntext, 0, Qt::AlignHCenter);
