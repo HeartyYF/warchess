@@ -25,8 +25,7 @@ void QGraphicsTileItem::clearLayer(bool keepSource)
     }
     for(auto& i : layered)
     {
-        QPixmap nullpix;
-        i->layer.setPixmap(nullpix);
+        i->layer.setPixmap(QPixmap());
         i->mov = infdist;
         i->rge = infdist;
         i->canMove = false;
@@ -145,8 +144,7 @@ void QGraphicsTileItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
             if(source != nullptr)
             {
                 source->Selected = false;
-                QPixmap nullpix;
-                source->layer.setPixmap(nullpix);
+                source->layer.setPixmap(QPixmap());
             }
             clearLayer();
             emit clearSidebar();
@@ -156,8 +154,7 @@ void QGraphicsTileItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
         view->centerOn(this);
         if(Selected)
         {
-            QPixmap nullpix;
-            source->layer.setPixmap(nullpix);
+            source->layer.setPixmap(QPixmap());
             clearLayer();
             Selected = false;
             this->chara->isMoved = true;
@@ -169,13 +166,12 @@ void QGraphicsTileItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
             setChara(source->chara);
             source->setChara(nullptr);
             source->Selected = false;
-            QPixmap nullpix;
-            source->layer.setPixmap(nullpix);
+            source->layer.setPixmap(QPixmap());
             tilefind.insert(chara, this);
             clearLayer();
             isMoved = true;
             Selected = true;
-            layer.setPixmap(QPixmap(":/image/selectbox"));
+            setSelectbox(true);
             source = this;
             chara->isMoved = true;
             generateLayer(x, y, 0);
@@ -184,17 +180,29 @@ void QGraphicsTileItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
         else if(canAttack)
         {
             isMoved = false;
+            clearLayer();
+            int damage = qMax(source->chara->getatk() - chara->getdef(), qCeil((float)chara->getatk() * 0.1));
             if(chara->damage(source->chara->getatk()))
             {
+                emit damaged(damage, x, y);
                 emit onDeath(chara);
             }
-            source->Selected = false;
-            QPixmap nullpix;
-            source->layer.setPixmap(nullpix);
-            source->chara->isMoved = true;
-            clearLayer();
-            emit endChar(source->chara);
-            emit displaySidebar(this);
+            else
+            {
+                emit damaged(damage, x, y);
+            }
+            if(!isOver)
+            {
+                source->Selected = false;
+                source->layer.setPixmap(QPixmap());
+                source->chara->isMoved = true;
+                emit endChar(source->chara);
+                emit displaySidebar(this);
+            }
+            else
+            {
+                isOver = false;
+            }
         }
         else if(chara != nullptr && chara->isAlly() && !chara->isMoved && !isMoved)
         {
@@ -202,12 +210,11 @@ void QGraphicsTileItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
             if(source != nullptr)
             {
                 source->Selected = false;
-                QPixmap nullpix;
-                source->layer.setPixmap(nullpix);
+                source->layer.setPixmap(QPixmap());
             }
             clearLayer();
             Selected = true;
-            layer.setPixmap(QPixmap(":/image/selectbox"));
+            setSelectbox(true);
             layered.push_back(this);
             source = this;
             generateLayer(x, y, chara->getmov() + tile->getCost());
@@ -242,8 +249,19 @@ void QGraphicsTileItem::setChara(Character* _chara)
     }
     else
     {
-        QPixmap nullpix;
-        avatar.setPixmap(nullpix);
+        avatar.setPixmap(QPixmap());
+    }
+}
+
+void QGraphicsTileItem::setSelectbox(bool state)
+{
+    if(state)
+    {
+        layer.setPixmap(QPixmap(":/image/selectbox"));
+    }
+    else
+    {
+        layer.setPixmap(QPixmap());
     }
 }
 
@@ -270,5 +288,6 @@ vector<vector<QGraphicsTileItem*>> QGraphicsTileItem::items;
 list<QGraphicsTileItem*> QGraphicsTileItem::layered;
 QHash<Character*, QGraphicsTileItem*> QGraphicsTileItem::tilefind;
 bool QGraphicsTileItem::isMoved = false;
+bool QGraphicsTileItem::isOver = false;
 QSoundEffect QGraphicsTileItem::atkSound;
 QSoundEffect QGraphicsTileItem::defSound;

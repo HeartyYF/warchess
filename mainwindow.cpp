@@ -29,7 +29,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(controller, SIGNAL(allyTurn()), this, SLOT(onAllyTurn()));
     connect(controller, SIGNAL(gameWin()), this, SLOT(stopGame()));
     connect(controller, SIGNAL(gameLost()), this, SLOT(stopGame()));
-    controller->drawBeforeDialog();
+    connect(controller, SIGNAL(newTurn(int)), this, SLOT(onNewTurn(int)));
+    connect(controller, SIGNAL(showMap(QString)), this, SLOT(showName(QString)));
+    ui->pushButton->raise();
+    ui->text->raise();
 }
 
 MainWindow::~MainWindow()
@@ -141,7 +144,41 @@ void MainWindow::onAllyTurn()
     ui->turn->hide();
 }
 
+void MainWindow::onNewTurn(int turn)
+{
+    ui->turn->setText(QString("第%1回合").arg(turn));
+    ui->turn->raise();
+    ui->turn->show();
+    QTime dieTime= QTime::currentTime().addSecs(1);
+    while(QTime::currentTime() < dieTime)
+    {
+        QCoreApplication::processEvents();
+    }
+    ui->turn->hide();
+}
+
+void MainWindow::showName(QString name)
+{
+    ui->turn->setText(name);
+    ui->turn->raise();
+    ui->turn->show();
+    QTime dieTime= QTime::currentTime().addSecs(1);
+    while(QTime::currentTime() < dieTime)
+    {
+        QCoreApplication::processEvents();
+    }
+    ui->turn->hide();
+}
+
 void MainWindow::stopGame()
 {
     close();
 }
+
+void MainWindow::on_pushButton_clicked()
+{
+    ui->pushButton->hide();
+    ui->text->hide();
+    controller->drawBeforeDialog();
+}
+

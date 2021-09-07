@@ -91,6 +91,7 @@ void GameController::drawAfterDialog()
 
 void GameController::drawNextBattle()
 {
+    emit clearSidebar();
     allylist.clear();
     enemylist.clear();
     winning.clear();
@@ -109,6 +110,7 @@ void GameController::drawNextBattle()
     map = new Map(mapjson, QFileInfo(file).path(), this, player);
     map->summonItems(scene);
     turnlist = allylist;
+    emit showMap(map->name);
 }
 
 Character* GameController::findchar(const QString& name) const
@@ -150,6 +152,7 @@ void GameController::nextTurn()
         openlist.clear();
         closelist.clear();
         QGraphicsTileItem* begin = QGraphicsTileItem::tilefind[i];
+        begin->setSelectbox(true);
         QGraphicsTileItem* end;
         Character* dest;
         int dist = 999999;
@@ -165,12 +168,10 @@ void GameController::nextTurn()
         }
         if(dist <= i->getrange())
         {
+            int damage = qMax(i->getatk() - dest->getdef(), qCeil((float)i->getatk() * 0.1));
             dest->damage(i->getatk());
-            QTime dieTime= QTime::currentTime().addSecs(1);
-            while(QTime::currentTime() < dieTime)
-            {
-                QCoreApplication::processEvents();
-            }
+            damageText(damage, end->x, end->y);
+            begin->setSelectbox(false);
             continue;
         }
         begin->cost = 0;
@@ -306,6 +307,7 @@ void GameController::nextTurn()
         }
         if(end->father == nullptr)
         {
+            begin->setSelectbox(false);
             continue;
         }
         while(end->cost - end->getTile()->getCost() > i->getmov() || end->getChar() != nullptr)
@@ -313,23 +315,37 @@ void GameController::nextTurn()
             end = end->father;
         }
         begin->setChara(nullptr);
+        begin->setSelectbox(false);
         end->setChara(i);
+        end->setSelectbox(true);
         QGraphicsTileItem::tilefind.insert(i, end);
         if(QPoint(QGraphicsTileItem::tilefind[dest]->x - end->x, QGraphicsTileItem::tilefind[dest]->y - end->y).manhattanLength() <= i->getrange())
         {
+            int damage = qMax(i->getatk() - dest->getdef(), qCeil((float)i->getatk() * 0.1));
             dest->damage(i->getatk());
+            damageText(damage, QGraphicsTileItem::tilefind[dest]->x, QGraphicsTileItem::tilefind[dest]->y);
         }
-        QTime dieTime= QTime::currentTime().addSecs(1);
-        while(QTime::currentTime() < dieTime)
+        else
         {
-            QCoreApplication::processEvents();
+            QTime dieTime= QTime::currentTime().addSecs(1);
+            while(QTime::currentTime() < dieTime)
+            {
+                QCoreApplication::processEvents();
+            }
         }
+        end->setSelectbox(false);
         view->viewport()->update();
     }
     ++turn;
+    emit newTurn(turn);
     auto templist = allylist;
     for(auto& i: templist)
     {
+        if(QGraphicsTileItem::tilefind[i]->getTile()->getDamage() != 0)
+        {
+            int damage = QGraphicsTileItem::tilefind[i]->getTile()->getDamage();
+            damageText(damage, QGraphicsTileItem::tilefind[i]->x, QGraphicsTileItem::tilefind[i]->y);
+        }
         if(i->hurt(QGraphicsTileItem::tilefind[i]->getTile()->getDamage()))
         {
             onDeathCheck(i);
@@ -342,6 +358,11 @@ void GameController::nextTurn()
     templist = enemylist;
     for(auto& i: templist)
     {
+        if(QGraphicsTileItem::tilefind[i]->getTile()->getDamage() != 0)
+        {
+            int damage = QGraphicsTileItem::tilefind[i]->getTile()->getDamage();
+            damageText(damage, QGraphicsTileItem::tilefind[i]->x, QGraphicsTileItem::tilefind[i]->y);
+        }
         if(i->hurt(QGraphicsTileItem::tilefind[i]->getTile()->getDamage()))
         {
             onDeathCheck(i);
@@ -383,6 +404,7 @@ void GameController::onDeathCheck(Character* chara)
         if(winning.size() == 0)
         {
             drawAfterDialog();
+            QGraphicsTileItem::isOver = true;
         }
     }
 }
@@ -395,6 +417,22 @@ void GameController::onclearSidebar()
 void GameController::ondisplaySidebar(QGraphicsTileItem* item)
 {
     emit displaySidebar(item);
+}
+
+void GameController::damageText(int damage, int x, int y)
+{
+    QGraphicsTextItem text;
+    text.setPlainText(QString::number(damage));
+    text.setDefaultTextColor(Qt::red);
+    scene->addItem(&text);
+    text.setPos(64 * y, 64 * x);
+    QTime dieTime= QTime::currentTime().addSecs(1);
+    while(QTime::currentTime() < dieTime)
+    {
+        QCoreApplication::processEvents();
+    }
+    scene->removeItem(&text);
+    view->viewport()->update();
 }
 
 int GameController::getTurn() const

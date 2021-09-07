@@ -26,7 +26,6 @@ class GameController;
 class Map: public QObject
 {
     GameController* controller;
-    QString name;
     list<Tile*> tilelist;
     list<Character*> charlist;
     QJsonArray win;
@@ -40,6 +39,7 @@ public:
     void summonItems(QGraphicsScene*& scene);
     static vector<vector<Tile*>> mapinfo;
     static vector<vector<Character*>> charinfo;
+    QString name;
 };
 
 #endif // MAP_H

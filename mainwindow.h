@@ -29,5 +29,9 @@ public slots:
     void onEnemyTurn();
     void onAllyTurn();
     void stopGame();
+    void onNewTurn(int);
+    void showName(QString);
+private slots:
+    void on_pushButton_clicked();
 };
 #endif // MAINWINDOW_H

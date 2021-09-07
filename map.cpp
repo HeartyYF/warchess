@@ -143,6 +143,7 @@ void Map::summonItems(QGraphicsScene*& scene)
             connect(curItem, SIGNAL(onDeath(Character*)), controller, SLOT(onDeathCheck(Character*)));
             connect(curItem, SIGNAL(clearSidebar()), controller, SLOT(onclearSidebar()));
             connect(curItem, SIGNAL(displaySidebar(QGraphicsTileItem*)), controller, SLOT(ondisplaySidebar(QGraphicsTileItem*)));
+            connect(curItem, SIGNAL(damaged(int, int, int)), controller, SLOT(damageText(int, int, int)));
             scene->addItem(curItem);
         }
     }

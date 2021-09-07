@@ -53,14 +53,50 @@
    <widget class="QLabel" name="turn">
     <property name="geometry">
      <rect>
-      <x>590</x>
-      <y>240</y>
+      <x>525</x>
+      <y>120</y>
       <width>581</width>
       <height>120</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>20</pointsize>
+     </font>
+    </property>
     <property name="text">
      <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="text">
+    <property name="geometry">
+     <rect>
+      <x>495</x>
+      <y>60</y>
+      <width>290</width>
+      <height>200</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>20</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Warchess the Game</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton">
+    <property name="geometry">
+     <rect>
+      <x>595</x>
+      <y>380</y>
+      <width>90</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>开始游戏</string>
     </property>
    </widget>
   </widget>

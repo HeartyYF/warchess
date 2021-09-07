@@ -54,6 +54,7 @@ public slots:
     void ondisplaySidebar(QGraphicsTileItem*);
     void drawBeforeDialog();
     void drawNextBattle();
+    void damageText(int, int, int);
 
 signals:
     void clearSidebar();
@@ -62,6 +63,8 @@ signals:
     void allyTurn();
     void gameWin();
     void gameLost();
+    void newTurn(int);
+    void showMap(QString);
 
 };
 

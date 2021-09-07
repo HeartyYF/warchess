@@ -38,6 +38,7 @@ class QGraphicsTileItem: public QObject, public QGraphicsItemGroup
 public:
     int x, y;
     static QGraphicsView* view;
+    static bool isOver;
     static vector<vector<QGraphicsTileItem*>> items;
     static QHash<Character*, QGraphicsTileItem*> tilefind;
     static QSoundEffect atkSound;
@@ -50,6 +51,7 @@ public:
     void setChara(Character* _chara);
     bool canPass();
     const static int infdist = -999999;
+    void setSelectbox(bool state);
     const Tile* const getTile() const;
     const Character* const getChar() const;
     int cost;
@@ -60,6 +62,7 @@ signals:
     void onDeath(Character*);
     void clearSidebar();
     void displaySidebar(QGraphicsTileItem*);
+    void damaged(int, int, int);
 };
 
 #endif // QGRAPHICSTILEITEM_H
