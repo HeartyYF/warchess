@@ -157,6 +157,7 @@ void QGraphicsTileItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
             source->layer.setPixmap(QPixmap());
             clearLayer();
             Selected = false;
+            source = nullptr;
             this->chara->isMoved = true;
             isMoved = false;
             emit endChar(chara);
@@ -203,6 +204,7 @@ void QGraphicsTileItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
             {
                 isOver = false;
             }
+            source = nullptr;
         }
         else if(chara != nullptr && chara->isAlly() && !chara->isMoved && !isMoved)
         {

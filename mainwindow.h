@@ -31,6 +31,9 @@ public slots:
     void stopGame();
     void onNewTurn(int);
     void showName(QString);
+    void onLevelup(list<Character*>);
+    void onEndLevelup(Levelup*);
+
 private slots:
     void on_pushButton_clicked();
 };

@@ -6,6 +6,8 @@
 #include <QDir>
 #include <QtMath>
 
+class Levelup;
+
 class Character
 {
     Character* source;
@@ -19,9 +21,7 @@ class Character
     int def;
     int mov;
     int range;
-    int exp;
-    int level;
-    int point;
+    int pt = 0;
 
 public:
     Character(const QString& name, const QJsonObject& charjson, const bool& ally, const QDir& dir);
@@ -42,6 +42,7 @@ public:
     bool isMoved = false;
     bool damage(int atk);
     bool hurt(int damage);
+    friend Levelup;
 
 };
 

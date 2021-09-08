@@ -10,6 +10,7 @@
 #include <algorithm>
 #include "map.h"
 #include "dialog.h"
+#include "levelup.h"
 using std::list;
 using std::find;
 
@@ -54,6 +55,7 @@ public slots:
     void ondisplaySidebar(QGraphicsTileItem*);
     void drawBeforeDialog();
     void drawNextBattle();
+    void drawLevelup();
     void damageText(int, int, int);
 
 signals:
@@ -65,6 +67,7 @@ signals:
     void gameLost();
     void newTurn(int);
     void showMap(QString);
+    void levelup(list<Character*>);
 
 };
 

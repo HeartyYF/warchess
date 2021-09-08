@@ -13,6 +13,7 @@ SOURCES += \
     character.cpp \
     dialog.cpp \
     gamecontroller.cpp \
+    levelup.cpp \
     main.cpp \
     mainwindow.cpp \
     map.cpp \
@@ -23,12 +24,14 @@ HEADERS += \
     character.h \
     dialog.h \
     gamecontroller.h \
+    levelup.h \
     mainwindow.h \
     map.h \
     qgraphicstileitem.h \
     tile.h
 
 FORMS += \
+    levelup.ui \
     mainwindow.ui
 
 msvc {

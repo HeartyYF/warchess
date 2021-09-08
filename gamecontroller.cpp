@@ -57,11 +57,11 @@ void GameController::drawBeforeDialog()
         QJsonDocument document = QJsonDocument::fromJson(value.toUtf8());
         QJsonArray dialjson = document.array();
         dialog = new Dialog(dialjson, QFileInfo(file).path(), scene, player);
-        connect(dialog, SIGNAL(dialogEnd()), this, SLOT(drawNextBattle()));
+        connect(dialog, SIGNAL(dialogEnd()), this, SLOT(drawLevelup()));
     }
     else
     {
-        drawNextBattle();
+        drawLevelup();
     }
 }
 
@@ -86,6 +86,18 @@ void GameController::drawAfterDialog()
     else
     {
         drawBeforeDialog();
+    }
+}
+
+void GameController::drawLevelup()
+{
+    if(current != 0)
+    {
+        emit levelup(charlist);
+    }
+    else
+    {
+        drawNextBattle();
     }
 }
 

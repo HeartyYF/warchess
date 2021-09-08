@@ -117,6 +117,11 @@ const int Character::getrange() const
 bool Character::hurt(int damage)
 {
     curhp -= damage;
+    if(curhp > hp)
+    {
+        curhp = hp;
+        return false;
+    }
     if(curhp <= 0)
     {
         return true;

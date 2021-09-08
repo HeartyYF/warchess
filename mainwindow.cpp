@@ -31,6 +31,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(controller, SIGNAL(gameLost()), this, SLOT(stopGame()));
     connect(controller, SIGNAL(newTurn(int)), this, SLOT(onNewTurn(int)));
     connect(controller, SIGNAL(showMap(QString)), this, SLOT(showName(QString)));
+    connect(controller, SIGNAL(levelup(list<Character*>)), this, SLOT(onLevelup(list<Character*>)));
     ui->pushButton->raise();
     ui->text->raise();
 }
@@ -109,7 +110,7 @@ void MainWindow::ondisplaySidebar(QGraphicsTileItem* item)
         atkdef->setText(QString("攻击：%1 防御：%2").arg(chara->getatk()).arg(chara->getdef()));
         ui->vlayout->addWidget(atkdef, 0, Qt::AlignHCenter);
         QLabel* movrge = new QLabel(this);
-        movrge->setText(QString("机动：%1 距离：%2").arg(chara->getmov()).arg(chara->getrange()));
+        movrge->setText(QString("机动：%1 范围：%2").arg(chara->getmov()).arg(chara->getrange()));
         ui->vlayout->addWidget(movrge, 0, Qt::AlignHCenter);
     }
     ui->vlayout->addStretch();
@@ -182,3 +183,18 @@ void MainWindow::on_pushButton_clicked()
     controller->drawBeforeDialog();
 }
 
+void MainWindow::onLevelup(list<Character*> charlist)
+{
+    view->hide();
+    Levelup* levelup = new Levelup(charlist, this);
+    levelup->raise();
+    levelup->show();
+    connect(levelup, SIGNAL(end(Levelup*)), this, SLOT(onEndLevelup(Levelup*)));
+}
+
+void MainWindow::onEndLevelup(Levelup* levelup)
+{
+    delete levelup;
+    view->show();
+    controller->drawNextBattle();
+}
