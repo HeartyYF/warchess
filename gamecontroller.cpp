@@ -39,6 +39,7 @@ struct
 
 void GameController::drawBeforeDialog()
 {
+    emit clearSidebar();
     view->centerOn(0, 0);
     scene->clear();
     if(current == battle.count())
@@ -67,6 +68,7 @@ void GameController::drawBeforeDialog()
 
 void GameController::drawAfterDialog()
 {
+    emit clearSidebar();
     view->centerOn(0, 0);
     scene->clear();
     QJsonObject battlejson = battle[current].toObject();
