@@ -77,7 +77,7 @@ const int Tile::getDamage() const
     return damage;
 }
 
-QPixmap Tile::nullImage()
+QPixmap Tile::nullImage()//一些静态方法 用于返回一些固定的图片
 {
     QPixmap pixmap(64, 64);
     pixmap.fill(Qt::transparent);

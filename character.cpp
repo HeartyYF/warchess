@@ -16,9 +16,9 @@ Character::Character(const QString& charname, const QJsonObject& charjson, const
         range = charjson["range"].toInt();
         curhp = hp;
     }
-}
+}//从json读取一个chara
 
-Character::Character(Character* _chara)
+Character::Character(Character* _chara)//根据已有的chara copy一个完全一致的chara 实际用来生成一模一样的敌人
 {
     source = _chara->source;
     name = _chara->name;
@@ -33,7 +33,7 @@ Character::Character(Character* _chara)
     curhp = hp;
 }
 
-Character::Character(const QString& charname, const QJsonObject& charjson)
+Character::Character(const QString& charname, const QJsonObject& charjson)//根据已有的charname 从json读取一个chara
 {
     name = charname;
     ally = true;
@@ -44,7 +44,7 @@ Character::Character(const QString& charname, const QJsonObject& charjson)
     range = charjson["range"].toInt();
 }
 
-Character::Character(const QJsonObject& charjson, Character* _chara, const QDir& dir)
+Character::Character(const QJsonObject& charjson, Character* _chara, const QDir& dir)//根据已有的charjson 读取其属性 用来实例化友方
 {
     source = _chara;
     name = _chara->name;
@@ -114,7 +114,7 @@ const int Character::getrange() const
     return range;
 }
 
-bool Character::hurt(int damage)
+bool Character::hurt(int damage)//实际受伤
 {
     curhp -= damage;
     if(curhp > hp)
@@ -129,13 +129,13 @@ bool Character::hurt(int damage)
     return false;
 }
 
-bool Character::damage(int _atk)
+bool Character::damage(int _atk)//用于攻击
 {
     int damage;
     if(_atk - def < qCeil(double(_atk) * 0.1))
     {
         damage = qCeil(double(_atk) * 0.1);
-        QGraphicsTileItem::defSound.play();
+        QGraphicsTileItem::defSound.play();//播放破防和不破防的对应音效
     }
     else
     {

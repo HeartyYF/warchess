@@ -9,7 +9,7 @@ Levelup::Levelup(list<Character*> _charlist, QWidget *parent) :
     ui->setupUi(this);
     for(Character*& chara : charlist)
     {
-        chara->pt += 100;
+        chara->pt += 100;//反正是测试 属性点大甩卖
         QListWidgetItem* item = new QListWidgetItem();
         item->setSizeHint(QSize(64, 100));
         ui->list->addItem(item);

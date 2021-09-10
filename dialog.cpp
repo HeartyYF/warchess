@@ -11,14 +11,14 @@ Dialog::Dialog(const QJsonArray& dialjson, const QDir curdir, QGraphicsScene* sc
     loadCurDial();
 }
 
-void Dialog::loadCurDial()
+void Dialog::loadCurDial()//其实是加载下一段对话
 {
     if(count == dialarray.count())
     {
         emit dialogEnd();
         return;
     }
-    if(dial == 0)
+    if(dial == 0)//读取可选的bgm和背景图
     {
         if(dialarray[count].toObject().contains("bgm"))
         {

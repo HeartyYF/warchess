@@ -10,7 +10,7 @@ class Levelup;
 
 class Character
 {
-    Character* source;
+    Character* source;//如果是同一chara衍生出的实例则存放其源信息 用于同步经验
     QString name;
     QString imagepath;
     QPixmap* image;

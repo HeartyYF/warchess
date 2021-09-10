@@ -25,15 +25,10 @@ signals:
 private slots:
     void on_next_clicked();
     void on_list_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
-
     void on_atkb_clicked();
-
     void on_defb_clicked();
-
     void on_movb_clicked();
-
     void on_hpb_clicked();
-
     void on_rgeb_clicked();
 
 private:

@@ -22,7 +22,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->vlayout->setSpacing(10);
     player = new QMediaPlayer;
     controller = new GameController(scene, view, player);
-    connect(player, SIGNAL(stateChanged(QMediaPlayer::State)), player, SLOT(play()));
+    connect(player, SIGNAL(stateChanged(QMediaPlayer::State)), player, SLOT(play()));//简单粗暴的循环播放
     connect(controller, SIGNAL(clearSidebar()), this, SLOT(onclearSidebar()));
     connect(controller, SIGNAL(displaySidebar(QGraphicsTileItem*)), this, SLOT(ondisplaySidebar(QGraphicsTileItem*)));
     connect(controller, SIGNAL(enemyTurn()), this, SLOT(onEnemyTurn()));
@@ -43,10 +43,10 @@ MainWindow::~MainWindow()
 
 void MainWindow::onclearSidebar()
 {
-    QLayoutItem* i;
+    QLayoutItem* i;//清除sidebar时销毁所有其中对象
     while((i = ui->vlayout->takeAt(0)) != nullptr)
     {
-        QLayout* layout = dynamic_cast<QLayout*>(i);
+        QLayout* layout = dynamic_cast<QLayout*>(i);//尝试类型转换 如果成功说明是个layout 要销毁layout里的东西
         if(layout == nullptr)
         {
             delete i->widget();
@@ -94,7 +94,7 @@ void MainWindow::ondisplaySidebar(QGraphicsTileItem* item)
     ui->vlayout->addWidget(pass, 0, Qt::AlignHCenter);
     if(tile->canPass())
     {
-        QLabel* candd = new QLabel(this);
+        QLabel* candd = new QLabel(this);//一些非常丑陋的字符串处理
         candd->setText(QString("消耗：%1").arg(tile->getCost()) + (tile->getDamage() != 0 ? QString(tile->getDamage()>0 ? " 伤害：%1" : " 恢复：%1").arg(tile->getDamage()) : ""));
         ui->vlayout->addWidget(candd, 0, Qt::AlignHCenter);
     }

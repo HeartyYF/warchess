@@ -28,7 +28,7 @@ class GameController: public QObject
     list<Character*> winning;//胜利条件
     list<Character*> losing;//失败条件
     list<Character*> turnlist;
-    list<QGraphicsTileItem*> openlist;
+    list<QGraphicsTileItem*> openlist;//用于a*寻路
     list<QGraphicsTileItem*> closelist;
     QMap<QString, Character*> charfind;
     QMediaPlayer* player;

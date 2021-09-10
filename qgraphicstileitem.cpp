@@ -1,7 +1,7 @@
 #include "qgraphicstileitem.h"
 
 QGraphicsTileItem::QGraphicsTileItem(int i, int j, Tile* _tile): tile(_tile), x(i), y(j)
-{
+{//背景 角色 前景 覆盖层 这样角色会显示在背景和前景之间
     bg.setPixmap(*tile->getbImage());
     fg.setPixmap(*tile->getfImage());
     addToGroup(&bg);
@@ -18,7 +18,7 @@ QGraphicsTileItem::QGraphicsTileItem(int i, int j, Tile* _tile): tile(_tile), x(
 }
 
 void QGraphicsTileItem::clearLayer(bool keepSource)
-{
+{//清空覆盖层
     if(!keepSource)
     {
         source = nullptr;
@@ -136,7 +136,7 @@ void QGraphicsTileItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
 }
 
 void QGraphicsTileItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
-{
+{//移动和攻击下放到TileItem
     if((event->screenPos() - clickpos).manhattanLength() <= 10)
     {
         if(event->button() == Qt::RightButton && !isMoved)
@@ -152,7 +152,7 @@ void QGraphicsTileItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
         }
         emit displaySidebar(this);
         view->centerOn(this);
-        if(Selected)
+        if(Selected)//如果已被选中
         {
             source->layer.setPixmap(QPixmap());
             clearLayer();
@@ -162,7 +162,7 @@ void QGraphicsTileItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
             isMoved = false;
             emit endChar(chara);
         }
-        else if(canMove)
+        else if(canMove)//如果是可以通行到的格子
         {
             setChara(source->chara);
             source->setChara(nullptr);
@@ -178,7 +178,7 @@ void QGraphicsTileItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
             generateLayer(x, y, 0);
             emit displaySidebar(this);
         }
-        else if(canAttack)
+        else if(canAttack)//如果在攻击范围之内
         {
             isMoved = false;
             clearLayer();
@@ -192,7 +192,7 @@ void QGraphicsTileItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
             {
                 emit damaged(damage, x, y);
             }
-            if(!isOver)
+            if(!isOver)//isOver用于指示是否已结束该地图 如果战斗已经结束了 资源其实在其他类中释放掉了
             {
                 source->Selected = false;
                 source->layer.setPixmap(QPixmap());
@@ -206,7 +206,7 @@ void QGraphicsTileItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
             }
             source = nullptr;
         }
-        else if(chara != nullptr && chara->isAlly() && !chara->isMoved && !isMoved)
+        else if(chara != nullptr && chara->isAlly() && !chara->isMoved && !isMoved)//如果在点还没行动过的角色
         {
             isMoved = false;
             if(source != nullptr)

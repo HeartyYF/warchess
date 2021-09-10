@@ -2,7 +2,7 @@
 #include "gamecontroller.h"
 
 Map::Map(const QJsonObject& mapjson, const QDir curdir, GameController* _controller, QMediaPlayer* player): controller(_controller)
-{
+{//从json加载地图
     name = mapjson["name"].toString();
     width = mapjson["width"].toInt();
     height = mapjson["height"].toInt();
@@ -123,7 +123,7 @@ Map::~Map()
 
 
 void Map::summonItems(QGraphicsScene*& scene)
-{
+{//往scene里塞东西
     QGraphicsTileItem::items.resize(width);
     for(auto i = 0; i < width; ++i)
     {

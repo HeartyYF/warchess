@@ -6,7 +6,7 @@ GameController::GameController(QGraphicsScene* _scene, QGraphicsView* _view, QMe
     QGraphicsTileItem::view = view;
     QGraphicsTileItem::atkSound.setSource(QUrl::fromLocalFile(":/sound/atk"));
     QGraphicsTileItem::defSound.setSource(QUrl::fromLocalFile(":/sound/def"));
-    const QString filename = "game/game.json";
+    const QString filename = "game/game.json";//是写死的 但也可以不是写死的 可以加一个QFileDialog动态读取游戏执行顺序的json
     QFile file(filename);
     path = QFileInfo(file).dir();
     file.open(QIODevice::ReadOnly);
@@ -35,7 +35,7 @@ struct
     {
         return f->cost + f->eval < s->cost + s->eval;
     }
-} cmp;
+} cmp;//一个用于a*排序的匿名结构 有一个实例就够了
 
 void GameController::drawBeforeDialog()
 {
@@ -48,7 +48,7 @@ void GameController::drawBeforeDialog()
         return;
     }
     QJsonObject battlejson = battle[current].toObject();
-    if(battlejson.contains("before"))
+    if(battlejson.contains("before"))//如果有 则生成对话 否则直接跳到下一步
     {
         QString dialfile = battlejson["before"].toString();
         QFile file(path.filePath(dialfile));
@@ -73,7 +73,7 @@ void GameController::drawAfterDialog()
     scene->clear();
     QJsonObject battlejson = battle[current].toObject();
     ++current;
-    if(battlejson.contains("after"))
+    if(battlejson.contains("after"))//类似地 有就生成 没有就下一步
     {
         QString dialfile = battlejson["after"].toString();
         QFile file(path.filePath(dialfile));
@@ -91,7 +91,7 @@ void GameController::drawAfterDialog()
     }
 }
 
-void GameController::drawLevelup()
+void GameController::drawLevelup()//加点的界面
 {
     if(current != 0)
     {
@@ -103,7 +103,7 @@ void GameController::drawLevelup()
     }
 }
 
-void GameController::drawNextBattle()
+void GameController::drawNextBattle()//画地图的界面
 {
     emit clearSidebar();
     allylist.clear();
@@ -161,7 +161,7 @@ void GameController::nextTurn()
     {
         i->isMoved = false;
     }
-    for(auto& i: enemylist)
+    for(auto& i: enemylist)//a*寻路
     {
         openlist.clear();
         closelist.clear();
@@ -191,7 +191,7 @@ void GameController::nextTurn()
         begin->cost = 0;
         begin->eval = dist;
         end->father = nullptr;
-        openlist.emplace_back(begin);
+        openlist.emplace_back(begin);//一个openlist 一个closelist 启发式寻路
         while(!openlist.empty())
         {
             auto cur = *openlist.begin();
@@ -317,16 +317,16 @@ void GameController::nextTurn()
             }
             openlist.remove(cur);
             closelist.emplace_back(cur);
-            openlist.sort(cmp);
+            openlist.sort(cmp);//排序一下 选出最优的
         }
-        if(end->father == nullptr)
+        if(end->father == nullptr)//不可达的情况
         {
             begin->setSelectbox(false);
             continue;
         }
         while(end->cost - end->getTile()->getCost() > i->getmov() || end->getChar() != nullptr)
         {
-            end = end->father;
+            end = end->father;//如果不可达或有人了 则退一步
         }
         begin->setChara(nullptr);
         begin->setSelectbox(false);
@@ -338,7 +338,7 @@ void GameController::nextTurn()
             int damage = qMax(i->getatk() - dest->getdef(), qCeil((float)i->getatk() * 0.1));
             dest->damage(i->getatk());
             damageText(damage, QGraphicsTileItem::tilefind[dest]->x, QGraphicsTileItem::tilefind[dest]->y);
-        }
+        }//判断能不能打到人
         else
         {
             QTime dieTime= QTime::currentTime().addSecs(1);
@@ -351,9 +351,9 @@ void GameController::nextTurn()
         view->viewport()->update();
     }
     ++turn;
-    emit newTurn(turn);
+    emit newTurn(turn);//新的回合开始
     auto templist = allylist;
-    for(auto& i: templist)
+    for(auto& i: templist)//根据是否站在损伤格上扣血
     {
         if(QGraphicsTileItem::tilefind[i]->getTile()->getDamage() != 0)
         {
@@ -398,7 +398,7 @@ void GameController::endTurn(Character* chara)
     }
 }
 
-void GameController::onDeathCheck(Character* chara)
+void GameController::onDeathCheck(Character* chara)//死亡判定
 {
     QGraphicsTileItem::tilefind[chara]->setChara(nullptr);
     view->viewport()->update();
@@ -433,7 +433,7 @@ void GameController::ondisplaySidebar(QGraphicsTileItem* item)
     emit displaySidebar(item);
 }
 
-void GameController::damageText(int damage, int x, int y)
+void GameController::damageText(int damage, int x, int y)//显示受伤的数字
 {
     QGraphicsTextItem text;
     text.setPlainText(QString::number(damage));
